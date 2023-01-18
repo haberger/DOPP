@@ -10,6 +10,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LassoCV, LassoLarsCV
 from sklearn.ensemble import RandomForestRegressor
 
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import GridSearchCV
+
 from feature_selection import create_traintestsplit
 
 def apply_lassocv(df, target, features, scaler=StandardScaler(), cv=5, random_state=45678, max_iter=5000, fprint=True):
@@ -87,13 +90,68 @@ def apply_rf(df, target, features, scaler=StandardScaler(), cv=5, random_state=4
 
     output['model'] = model
     output['pred'] = y_pred
-    output['feat_importance'] = model["randomforestregressor"].feature_importances_
+    #output['feat_importance'] = model["randomforestregressor"].feature_importances_
+    
+    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['r2'] = r2(y_test, y_pred)
+
+    if fprint:
+        print(f'current target: {target}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'r2: {r2(y_test, y_pred)}')
+        print(f'fi: {model["randomforestregressor"].feature_importances_}')
+        print()
+
+    # gini 
+    coeff_gini = pd.DataFrame(columns=features, index=[target])
+    coeff_gini.loc[target] = model["randomforestregressor"].feature_importances_
+    
+    if fprint:
+        print('importance of features (gini):')
+        display(coeff_gini)
+        print()
+    
+    output['feat_importance'] = coeff_gini
+
+    if fprint:
+        print('importance of features rank:')
+        display(coeff_gini.replace(0,np.nan).rank(axis=1, ascending=False).astype('Int64'))
+        print()
+
+    output['feat_importance_rank'] = coeff_gini.replace(0,np.nan).rank(axis=1, ascending=False).astype('Int64')
+
+    return output
+
+def apply_gridsearch_rf(df, target, features, param_grid, scaler=StandardScaler(), fprint=True):
+    output = dict()
+
+    X_train, X_test, y_train, y_test = create_traintestsplit(df, target_col=target)
+
+    model = make_pipeline(scaler,
+        RandomForestRegressor(
+            random_state=45678
+        )
+    )
+    reg = GridSearchCV(model, param_grid, scoring="r2", refit=True)
+    reg.fit(X_train[list(features)], y_train)
+
+    model = reg.best_estimator_
+    model.fit(X_train[features], y_train)
+    y_pred = model.predict(X_test[features])
+
+    output['model'] = model
+    params_df = pd.DataFrame(columns=reg.best_params_.keys(), index=[target])
+    params_df.loc[target] = list(reg.best_params_.values())
+    output['params'] = params_df
+    output['pred'] = y_pred
+    # output['feat_importance'] = model["randomforestregressor"].feature_importances_
 
     output['rmse'] = rmse(y_test, y_pred, squared=True)
     output['r2'] = r2(y_test, y_pred)
 
     if fprint:
         print(f'current target: {target}')
+        print(f'best_parameters: {reg.best_params_}')
         print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'fi: {model["randomforestregressor"].feature_importances_}')
