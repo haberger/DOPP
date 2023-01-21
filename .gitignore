@@ -1,2 +1,5 @@
 data/*
 !data/region_info.csv
+.ipynb_checkpoints
+.idea
+*.pyc

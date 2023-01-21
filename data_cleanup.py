@@ -15,10 +15,11 @@ def return_rows_where_all_corruption_data_is_available(df):
     df_all_corruption_info_available = df_cpi_combined.dropna(subset=corruption_col, axis=0, how='any')
     return df_all_corruption_info_available
 
-def load_reduced_df(df):
+def load_reduced_df():
     data_dir = 'data'
     qog_dataset_filename = 'qog_std_ts_jan22.csv'
     df = pd.read_csv(join(data_dir, qog_dataset_filename), low_memory=False)
 
     df = merge_region(df)
     df_reduced = return_rows_where_all_corruption_data_is_available(df)
+    return df_reduced
