@@ -34,13 +34,25 @@ def transform_to_categorical(df, threshold=10):
     return df_cat
 
 def drop_certain_columns(df, 
-                    columns_to_remove=(['vdem_corr', 'vdem_execorr', 'vdem_jucorrdc', 'vdem_pubcorr', 
-                    'bci_bcistd', 'vdem_exbribe', 'vdem_excrptps', 'vdem_exembez', 'vdem_exthftps', 'vdem_mecorrpt', 
-                    'wbgi_ccs', 'wbgi_rle', 'wbgi_rln', 'wbgi_rls', 'bci_bcistd', 'vdem_exbribe', 'vdem_excrptps', 
-                    'vdem_exembez', 'vdem_exthftps', 'vdem_mecorrpt', 'wbgi_ccs'])):
+                    corr_cols,
+                    columns_to_remove=(['ht_region'])):
 
-    df = df.drop(columns=columns_to_remove)
-    return df
+
+    meta_cols = ['ccode', 'ccode_qog', 'ccodealp', 'ccodealp_year', 'ccodecow', 'cname', 'cname_qog', 'cname_year', 'version', 'year', 'region', 'sub-region']
+
+    l = ['wbgi', 'ti', 'bci', 'vdem']
+    clist = []
+
+    for c in df.columns:
+        if c in meta_cols+corr_cols:
+            clist.append(c)
+        elif c.split('_')[0] not in l:
+            clist.append(c)
+
+    df_red = df[clist].copy()
+
+    df_red = df_red.drop(columns=columns_to_remove)
+    return df_red
 
 def load_reduced_df(corr_cols):
     data_dir = 'data'
@@ -48,8 +60,8 @@ def load_reduced_df(corr_cols):
     df = pd.read_csv(join(data_dir, qog_dataset_filename), low_memory=False)
 
     df = merge_region(df)
-    df_reduced = drop_certain_columns(df)
-    df_reduced = return_rows_where_all_corruption_data_is_available(df, corr_cols)
+    df_reduced = drop_certain_columns(df, corr_cols)
+    df_reduced = return_rows_where_all_corruption_data_is_available(df_reduced, corr_cols)
     df_reduced = drop_rows_with_nan_values(df_reduced)
     df_reduced = transform_to_categorical(df_reduced)
     return df_reduced

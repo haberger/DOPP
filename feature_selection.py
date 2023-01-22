@@ -34,7 +34,6 @@ def create_traintestsplit(df, corr_cols, meta_cols, random_state=424242, target_
         df.loc[:,['ti_cpi', 'ti_cpi_om']] = df.loc[:,['ti_cpi', 'ti_cpi_om']].replace(np.NaN, -5)
         df_cols_reduced = df.dropna(how='any', axis=1).copy()
         df_cols_reduced.loc[:,['ti_cpi', 'ti_cpi_om']] = df_cols_reduced.loc[:,['ti_cpi', 'ti_cpi_om']].replace(-5, np.NaN)
-
         df_cols_reduced = df_cols_reduced.dropna(subset = target_col, how='any', axis=0)
 
         feats_cols_reduced = df_cols_reduced.columns.difference(corr_cols+meta_cols)
