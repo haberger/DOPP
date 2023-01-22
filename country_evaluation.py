@@ -3,7 +3,7 @@ import pandas as pd
 def get_rel_err_df(rf_bf, df, corr_cols, threshold):
     relative_errs = {}
     for target in corr_cols:
-        relative_errs[target] = abs(rf_bf[target]['true'] - rf_bf[target]['pred']) / abs(rf_bf[target]['true'])
+        relative_errs[target] = rf_bf[target]['rel_err']
     relative_errs = pd.DataFrame(relative_errs)
     id_cols = ['region', 'sub-region', 'cname', 'year']
     for c in id_cols:
