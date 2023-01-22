@@ -174,5 +174,5 @@ def apply_gridsearch_rf(df, target, features, param_grid, corr_cols, meta_cols, 
         print()
 
     output['feat_importance_rank'] = coeff_gini.replace(0,np.nan).rank(axis=1, ascending=False).astype('Int64')
-
+    output['rel_err'] = abs(y_test - y_pred) / abs(y_test)
     return output
