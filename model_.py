@@ -90,6 +90,7 @@ def apply_rf(df, target, features, scaler=StandardScaler(), cv=5, random_state=4
 
     output['model'] = model
     output['pred'] = y_pred
+    output['rel_err'] = abs(y_test - y_pred) / abs(y_test)
     #output['feat_importance'] = model["randomforestregressor"].feature_importances_
     
     output['rmse'] = rmse(y_test, y_pred, squared=True)
