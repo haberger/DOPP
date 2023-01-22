@@ -49,19 +49,12 @@ def create_traintestsplit(df, corr_cols, meta_cols, random_state=424242, target_
     return X_train, X_test, y_train, y_test
 
 
-def pre_select(X, y, k=20):
+def pre_select(X, y, k=30):
     feat_selector = SelectKBest(f_regression, k=k)
     feat_selector.fit(X, y)
     best_feats = feat_selector.get_feature_names_out(X.columns)
 
     return best_feats
-
-
-def filter_corruption(feats, corruption_cols = ['bci_bcistd', 'vdem_exbribe', 'vdem_excrptps', 'vdem_exembez', 'vdem_exthftps', 'vdem_mecorrpt', 'wbgi_ccs']):
-    feats_filtered = [f for f in feats if f not in corruption_cols]
-
-    return feats_filtered
-
 
 def filter_highly_correlated(X, feats, corr_target=0.85):
 
