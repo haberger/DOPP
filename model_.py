@@ -35,12 +35,12 @@ def apply_lassocv(df, target, features, corr_cols, meta_cols, scaler=StandardSca
 
     if fprint:
         print(f'current target: {target}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'alpha: {model["lassocv"].alpha_}')
         print()
 
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
     output['alpha'] = model["lassocv"].alpha_
 
@@ -92,12 +92,12 @@ def apply_rf(df, target, features, corr_cols, meta_cols, scaler=StandardScaler()
     output['pred'] = y_pred
     #output['feat_importance'] = model["randomforestregressor"].feature_importances_
     
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
 
     if fprint:
         print(f'current target: {target}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'fi: {model["randomforestregressor"].feature_importances_}')
         print()
@@ -146,13 +146,13 @@ def apply_gridsearch_rf(df, target, features, param_grid, corr_cols, meta_cols, 
     output['pred'] = y_pred
     # output['feat_importance'] = model["randomforestregressor"].feature_importances_
 
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
 
     if fprint:
         print(f'current target: {target}')
         print(f'best_parameters: {reg.best_params_}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'fi: {model["randomforestregressor"].feature_importances_}')
         print()
