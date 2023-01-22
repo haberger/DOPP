@@ -132,7 +132,7 @@ def apply_gridsearch_rf(df, target, features, param_grid, corr_cols, meta_cols, 
             random_state=45678
         )
     )
-    reg = GridSearchCV(model, param_grid, scoring="r2", refit=True)
+    reg = GridSearchCV(model, param_grid, scoring="r2", refit=True, n_jobs=4)
     reg.fit(X_train[list(features)], y_train)
 
     model = reg.best_estimator_
