@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import math
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest
@@ -86,26 +87,122 @@ def filter_highly_correlated(X, feats, corr_target=0.85):
 
     return feats_reduced
 
-def filter_highly_correlated1(X, feats, corr_target=0.85):
+def filter_highly_correlated1(X, feats, tolerance=30):
+    print(1)
+    corrMatrix = X[feats].corr()
+    ct = len(corrMatrix)
 
-    cm = X[feats].corr()
-    cm = cm.where(np.triu(np.ones(cm.shape), k=1).astype(bool))
-    cm = cm.reset_index(drop=False)
-    cm = cm.melt(id_vars='index', var_name='second_col', value_name='corr')
-    cm.columns = ['first_col', 'second_col', 'corr_id']
-    cm = cm[cm.first_col != cm.second_col]
-    cm = cm.dropna()
+    while True:
+        ct -= 1
+        cols = corrMatrix.keys()
+        vals, vecs = np.linalg.eig(corrMatrix, )
+        vals1 = (max(vals)/vals)
 
-    highly_corr = cm[cm.corr_id.abs() > corr_target].copy()
+        print(min(vals1))
+
+        vals1 = np.sqrt(vals1)
+
+        # ll = []
+        # for x in vals1:
+        #     try:
+        #         math.sqrt(x)
+        #     except Exception as e:
+        #         print(e, x)
+
+        if max(vals1) <= tolerance:
+            break
+
+        for i, val in enumerate(vals):
+            if val == min(vals):
+                for j, vec in enumerate(vecs[:, i]):
+                    if abs(vec) == max(abs(vecs[:, i])):
+                        mask = np.ones(len(corrMatrix), dtype=bool)
+                        for n,col in enumerate(corrMatrix.keys()):
+                            mask[n] = n != j
+                        corrMatrix = corrMatrix[mask]
+                        corrMatrix.pop(cols[j])
+
+    #print(corrMatrix)
+
+    return list(corrMatrix.columns)
+
+    #Feature selection class to eliminate multicollinearity
 
 
-    highly_corr.loc[:, 'corr_id'] = highly_corr.corr_id.abs()
-    highly_corr_agg = highly_corr.groupby('first_col').agg({'second_col': 'count', 'corr_id': 'mean'})
+class MultiCollinearityEliminator():
+    
+    #Class Constructor
+    def __init__(self, df, target, threshold):
+        self.df = df
+        self.target = target
+        self.threshold = threshold
 
-    # print(highly_corr_agg)
+    #Method to create and return the feature correlation matrix dataframe
+    def createCorrMatrix(self, include_target = False):
+        #Checking we should include the target in the correlation matrix
+        if (include_target == False):
+            df_temp = self.df.drop([self.target], axis =1)
+            
+            #Setting method to Pearson to prevent issues in case the default method for df.corr() gets changed
+            #Setting min_period to 30 for the sample size to be statistically significant (normal) according to 
+            #central limit theorem
+            corrMatrix = df_temp.corr(method='pearson', min_periods=30).abs()
+        #Target is included for creating the series of feature to target correlation - Please refer the notes under the 
+        #print statement to understand why we create the series of feature to target correlation
+        elif (include_target == True):
+            corrMatrix = self.df.corr(method='pearson', min_periods=30).abs()
+        return corrMatrix
 
-    feats_reduced = [f for f in feats if f not in highly_corr_agg[highly_corr_agg.second_col > 1].index.values]
+    #Method to create and return the feature to target correlation matrix dataframe
+    def createCorrMatrixWithTarget(self):
+        #After obtaining the list of correlated features, this method will help to view which variables 
+        #(in the list of correlated features) are least correlated with the target
+        #This way, out the list of correlated features, we can ensure to elimate the feature that is 
+        #least correlated with the target
+        #This not only helps to sustain the predictive power of the model but also helps in reducing model complexity
+        
+        #Obtaining the correlation matrix of the dataframe (along with the target)
+        corrMatrix = self.createCorrMatrix(include_target = True)                           
+        #Creating the required dataframe, then dropping the target row 
+        #and sorting by the value of correlation with target (in asceding order)
+        corrWithTarget = pd.DataFrame(corrMatrix.loc[:,self.target]).drop([self.target], axis = 0).sort_values(by = self.target)                    
+        return corrWithTarget
 
-    display(highly_corr)
+    #Method to create and return the list of correlated features
+    def createCorrelatedFeaturesList(self):
+        #Obtaining the correlation matrix of the dataframe (without the target)
+        corrMatrix = self.createCorrMatrix(include_target = False)                          
+        colCorr = []
+        #Iterating through the columns of the correlation matrix dataframe
+        for column in corrMatrix.columns:
+            #Iterating through the values (row wise) of the correlation matrix dataframe
+            for idx, row in corrMatrix.iterrows():                                            
+                if(row[column]>self.threshold) and (row[column]<1):
+                    #Adding the features that are not already in the list of correlated features
+                    if (idx not in colCorr):
+                        colCorr.append(idx)
+                    if (column not in colCorr):
+                        colCorr.append(column)
+        return colCorr
 
-    return feats_reduced
+    #Method to eliminate the least important features from the list of correlated features
+    def deleteFeatures(self, colCorr):
+        #Obtaining the feature to target correlation matrix dataframe
+        corrWithTarget = self.createCorrMatrixWithTarget()                                  
+        for idx, row in corrWithTarget.iterrows():
+            if (idx in colCorr):
+                self.df = self.df.drop(idx, axis =1)
+                break
+        return self.df
+
+    #Method to run automatically eliminate multicollinearity
+    def autoEliminateMulticollinearity(self):
+        #Obtaining the list of correlated features
+        colCorr = self.createCorrelatedFeaturesList()                                       
+        while colCorr != []:
+            #Obtaining the dataframe after deleting the feature (from the list of correlated features) 
+            #that is least correlated with the taregt
+            self.df = self.deleteFeatures(colCorr)
+            #Obtaining the list of correlated features
+            colCorr = self.createCorrelatedFeaturesList()                                     
+        return self.df

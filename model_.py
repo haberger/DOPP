@@ -15,7 +15,7 @@ from sklearn.model_selection import GridSearchCV
 
 from feature_selection import create_traintestsplit
 
-def apply_lassocv(df, target, features, corr_cols, meta_cols, scaler=StandardScaler(), cv=5, random_state=45678, max_iter=5000, fprint=True):
+def apply_lassocv(df, target, features, corr_cols, meta_cols, scaler=StandardScaler(), cv=5, random_state=45678, max_iter=100000, fprint=True):
 
     output = dict()
     
