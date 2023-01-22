@@ -20,6 +20,7 @@ def return_rows_where_all_corruption_data_is_available(df, corr_cols):
     if 'merge' in df.columns:
         df = df.drop(columns=['merge'])
 
+
     return df
 
 def drop_rows_with_nan_values(df, threshold=0.1):
