@@ -13,8 +13,7 @@ def drop_date_columns(df):
     df = df.drop(date_columns, axis=1)
     return df
 
-def create_traintestsplit(df, random_state=424242, target_col='wbgi_cce', reduced=True):
-    print('5')
+def create_traintestsplit(df, corr_cols, meta_cols, random_state=424242, target_col='wbgi_cce', reduced=True):
     def divide_into_test_train(df, target, feats_cols, corr_column=target_col):
 
         x = df.copy()
@@ -23,34 +22,27 @@ def create_traintestsplit(df, random_state=424242, target_col='wbgi_cce', reduce
         x = x.loc[:, feats_cols]
         return x, y
 
-
     country_data = pd.DataFrame(df.groupby('cname')['sub-region'].min())
     country_data = country_data.reset_index(drop=False)
 
     X_train, X_test, y_train, y_test = train_test_split(country_data, country_data['cname'], test_size=0.2, random_state=random_state, stratify=country_data['sub-region'])
 
-    corr_cols = ['bci_bci', 'ti_cpi', 'ti_cpi_om','vdem_corr', 'vdem_execorr', 'vdem_jucorrdc', 'vdem_pubcorr', 'wbgi_cce']
-
     if reduced:
-        feat_col_start_reduced = 9
+
         df.loc[:,['ti_cpi', 'ti_cpi_om']] = df.loc[:,['ti_cpi', 'ti_cpi_om']].replace(np.NaN, -5)
         df_cols_reduced = df.dropna(how='any', axis=1).copy()
         df_cols_reduced.loc[:,['ti_cpi', 'ti_cpi_om']] = df_cols_reduced.loc[:,['ti_cpi', 'ti_cpi_om']].replace(-5, np.NaN)
 
         df_cols_reduced = df_cols_reduced.dropna(subset = target_col, how='any', axis=0)
 
-        feats_cols_reduced = [c for c in df_cols_reduced.columns[feat_col_start_reduced:-2] if c not in corr_cols]
+        feats_cols_reduced = df_cols_reduced.columns.difference(corr_cols+meta_cols)
+
         X_train, y_train = divide_into_test_train(df_cols_reduced, y_train, feats_cols_reduced, corr_column=target_col)
         X_test, y_test = divide_into_test_train(df_cols_reduced, y_test, feats_cols_reduced, corr_column=target_col)
     else:
-        feat_col_start_full = 10
-        feats_cols = [c for c in df.columns[feat_col_start_full:-2] if c not in corr_cols]
+        feats_cols = df.columns.difference(corr_cols+meta_cols)
         X_train, y_train = divide_into_test_train(df, y_train, feats_cols, corr_column=target_col)
         X_test, y_test = divide_into_test_train(df, y_test, feats_cols, corr_column=target_col)
-
-    print(df_cols_reduced.columns[:15])
-
-
 
     return X_train, X_test, y_train, y_test
 

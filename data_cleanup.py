@@ -5,7 +5,7 @@ import seaborn as sns
 from os.path import join
 from region_merge import merge_region
 
-def return_rows_where_all_corruption_data_is_available(df):
+def return_rows_where_all_corruption_data_is_available(df, corr_cols):
     '''BE AWARE THAT ONLY ONE OF ti_cpi and ti_cpi_om IS AVAILABLE NEVER BOTH'''
 
     corruption_col = ['bci_bci', 'ti_cpi', 'ti_cpi_om','vdem_corr', 'vdem_execorr', 'vdem_jucorrdc', 'vdem_pubcorr', 'wbgi_cce']
@@ -17,11 +17,11 @@ def return_rows_where_all_corruption_data_is_available(df):
     return df
 
 
-def load_reduced_df():
+def load_reduced_df(corr_cols):
     data_dir = 'data'
     qog_dataset_filename = 'qog_std_ts_jan22.csv'
     df = pd.read_csv(join(data_dir, qog_dataset_filename), low_memory=False)
 
     df = merge_region(df)
-    df_reduced = return_rows_where_all_corruption_data_is_available(df)
+    df_reduced = return_rows_where_all_corruption_data_is_available(df, corr_cols)
     return df_reduced
