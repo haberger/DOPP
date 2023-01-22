@@ -30,7 +30,7 @@ def transform_to_categorical(df, threshold=10):
     cols_to_exclude = ['region', 'subregion']
     labels = df.columns[(df.nunique() <= threshold) & (df.nunique() > 2)]
     labels = [l for l in labels if l not in cols_to_exclude]
-    df_cat = pd.get_dummies(df, columns=labels)
+    df_cat = pd.get_dummies(df, columns=labels, dummy_na=True)
     return df_cat
 
 def drop_certain_columns(df, 
