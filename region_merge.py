@@ -43,6 +43,11 @@ def merge_region(df, df_ccode_column_label='ccode', path_to_region_dataset = 'da
     df_merged.loc[df_merged.ccode == 999, 'region'] = 'Asia'
     df_merged.loc[df_merged.ccode == 999, 'sub-region'] = 'South-eastern Asia'
 
+    # merge Melanesia/Micronesia/Polynesia to Pacific Islands due to lack of data
+    df_merged.loc[df_merged['sub-region']=='Melanesia', 'sub-region'] = 'Pacific Islands'
+    df_merged.loc[df_merged['sub-region']=='Micronesia', 'sub-region'] = 'Pacific Islands'
+    df_merged.loc[df_merged['sub-region']=='Polynesia', 'sub-region'] = 'Pacific Islands'
+
     return df_merged
 
 

@@ -15,11 +15,11 @@ from sklearn.model_selection import GridSearchCV
 
 from feature_selection import create_traintestsplit
 
-def apply_lassocv(df, target, features, scaler=StandardScaler(), cv=5, random_state=45678, max_iter=5000, fprint=True):
+def apply_lassocv(df, target, features, corr_cols, meta_cols, scaler=StandardScaler(), cv=5, random_state=45678, max_iter=100000, fprint=True):
 
     output = dict()
     
-    X_train, X_test, y_train, y_test = create_traintestsplit(df, target_col=target)
+    X_train, X_test, y_train, y_test = create_traintestsplit(df, corr_cols, meta_cols, target_col=target)
 
     model = make_pipeline(
         scaler, 
@@ -35,12 +35,12 @@ def apply_lassocv(df, target, features, scaler=StandardScaler(), cv=5, random_st
 
     if fprint:
         print(f'current target: {target}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'alpha: {model["lassocv"].alpha_}')
         print()
 
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
     output['alpha'] = model["lassocv"].alpha_
 
@@ -71,10 +71,10 @@ def apply_lassocv(df, target, features, scaler=StandardScaler(), cv=5, random_st
 
     return output
     
-def apply_rf(df, target, features, scaler=StandardScaler(), cv=5, random_state=45678, max_depth=None, max_features=None, fprint=True):
+def apply_rf(df, target, features, corr_cols, meta_cols, scaler=StandardScaler(), cv=5, random_state=45678, max_depth=None, max_features=None, fprint=True):
     output = dict()
     
-    X_train, X_test, y_train, y_test = create_traintestsplit(df, target_col=target)
+    X_train, X_test, y_train, y_test = create_traintestsplit(df, corr_cols, meta_cols, target_col=target)
 
     model = make_pipeline(
         scaler, 
@@ -93,12 +93,12 @@ def apply_rf(df, target, features, scaler=StandardScaler(), cv=5, random_state=4
     output['rel_err'] = abs(y_test - y_pred) / abs(y_test)
     #output['feat_importance'] = model["randomforestregressor"].feature_importances_
     
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
 
     if fprint:
         print(f'current target: {target}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'fi: {model["randomforestregressor"].feature_importances_}')
         print()
@@ -123,10 +123,10 @@ def apply_rf(df, target, features, scaler=StandardScaler(), cv=5, random_state=4
 
     return output
 
-def apply_gridsearch_rf(df, target, features, param_grid, scaler=StandardScaler(), fprint=True):
+def apply_gridsearch_rf(df, target, features, param_grid, corr_cols, meta_cols, scaler=StandardScaler(), fprint=True):
     output = dict()
 
-    X_train, X_test, y_train, y_test = create_traintestsplit(df, target_col=target)
+    X_train, X_test, y_train, y_test = create_traintestsplit(df, corr_cols, meta_cols, target_col=target)
 
     model = make_pipeline(scaler,
         RandomForestRegressor(
@@ -147,13 +147,13 @@ def apply_gridsearch_rf(df, target, features, param_grid, scaler=StandardScaler(
     output['pred'] = y_pred
     # output['feat_importance'] = model["randomforestregressor"].feature_importances_
 
-    output['rmse'] = rmse(y_test, y_pred, squared=True)
+    output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
 
     if fprint:
         print(f'current target: {target}')
         print(f'best_parameters: {reg.best_params_}')
-        print(f'rmse: {rmse(y_test, y_pred, squared=True)}')
+        print(f'rmse: {rmse(y_test, y_pred, squared=False)}')
         print(f'r2: {r2(y_test, y_pred)}')
         print(f'fi: {model["randomforestregressor"].feature_importances_}')
         print()
