@@ -2,11 +2,8 @@
 ## Group 21: Godun, Haberger, Haberl, Konzett
 
 To answer the following question on the topic of corruption a model trained on the [QoG (Quality of Governence) Standard Time-Series Dataset](https://www.gu.se/en/quality-government/qog-data/data-downloads/standard-dataset) was created and analyzed: 
-
 - Which country’s characteristics are good predictors of a country’s position on a corruption index?
-
 - Are there countries whose characteristics don’t correspond to their position on a corruption index?
-
 - If yes, does this hold across all corruption indexes, or do the lists of such countries vary from index to index?
 
 ### Characteristics
