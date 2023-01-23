@@ -90,6 +90,7 @@ def apply_rf(df, target, features, corr_cols, meta_cols, scaler=StandardScaler()
 
     output['model'] = model
     output['pred'] = y_pred
+    output['rel_err'] = abs(y_test - y_pred) / abs(y_test)
     #output['feat_importance'] = model["randomforestregressor"].feature_importances_
     
     output['rmse'] = rmse(y_test, y_pred, squared=False)
@@ -148,6 +149,8 @@ def apply_gridsearch_rf(df, target, features, param_grid, corr_cols, meta_cols, 
 
     output['rmse'] = rmse(y_test, y_pred, squared=False)
     output['r2'] = r2(y_test, y_pred)
+    output['rel_err'] = abs(y_test - y_pred) / abs(y_test)
+    
 
     if fprint:
         print(f'current target: {target}')
