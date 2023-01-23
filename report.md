@@ -31,9 +31,9 @@ The models performed equally good for different countries across the regions. Ac
 
 <center>
     <p>
-    <img src="pics/rel_err_dist_sub_region_ti_cpi" width="400" />
-    <img src="pics/rel_err_dist_sub_region_ti_cpi_om" width="400" /> 
-    <img src="pics/rel_err_dist_sub_region_bci_bci" width="400" />
-    <img src="pics/rel_err_dist_sub_region_wbgi_cce" width="400" /> 
+    <img src="img/rel_err_dist_sub_region_ti_cpi" width="400" />
+    <img src="img/rel_err_dist_sub_region_ti_cpi_om" width="400" /> 
+    <img src="img/rel_err_dist_sub_region_bci_bci" width="400" />
+    <img src="img/rel_err_dist_sub_region_wbgi_cce" width="400" /> 
     </p>
 </center>
