@@ -23,7 +23,7 @@ def return_rows_where_all_corruption_data_is_available(df, corr_cols):
 
     return df
 
-def drop_rows_with_nan_values(df, threshold=0.1):
+def drop_columns_with_nan_values(df, threshold=0.1):
     df = df.dropna(axis='columns', thresh=len(df.index)*threshold)
     return df
 
@@ -36,11 +36,10 @@ def transform_to_categorical(df, threshold=10):
 
 def drop_certain_columns(df, 
                     corr_cols,
+                    meta_cols,
                     columns_to_remove=(['ht_region'])):
 
-
-    meta_cols = ['ccode', 'ccode_qog', 'ccodealp', 'ccodealp_year', 'ccodecow', 'cname', 'cname_qog', 'cname_year', 'version', 'year', 'region', 'sub-region']
-
+    # drop variables that start with those letters
     l = ['wbgi', 'ti', 'bci', 'vdem']
     clist = []
 
@@ -54,15 +53,3 @@ def drop_certain_columns(df,
 
     df_red = df_red.drop(columns=columns_to_remove)
     return df_red
-
-def load_reduced_df(corr_cols):
-    data_dir = 'data'
-    qog_dataset_filename = 'qog_std_ts_jan22.csv'
-    df = pd.read_csv(join(data_dir, qog_dataset_filename), low_memory=False)
-
-    df = merge_region(df)
-    df_reduced = drop_certain_columns(df, corr_cols)
-    df_reduced = return_rows_where_all_corruption_data_is_available(df_reduced, corr_cols)
-    df_reduced = drop_rows_with_nan_values(df_reduced)
-    df_reduced = transform_to_categorical(df_reduced)
-    return df_reduced
