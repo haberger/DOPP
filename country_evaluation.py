@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 
-def get_rel_err_df(rf_bf, df, corr_cols, threshold):
+def get_rel_err_df(rf_bf, df, corr_cols):
     relative_errs = {}
     for target in corr_cols:
         relative_errs[target] = rf_bf[target]['rel_err']
@@ -14,11 +14,8 @@ def get_rel_err_df(rf_bf, df, corr_cols, threshold):
     relative_errs = relative_errs.rename({'index': 'original_id'}, axis=1)
 
     relative_errs = relative_errs.melt(id_vars=id_cols + ['original_id'], var_name='corr_id', value_name='rel_err')
-    
-    relative_errs.loc[relative_errs.rel_err >= threshold, 'rel_err_status'] = 'bad'
-    relative_errs.loc[relative_errs.rel_err < threshold, 'rel_err_status'] = 'good'
 
-    return relative_errs
+    return relative_errs.copy()
 
 
 def get_rel_err_df_stats(df):
@@ -54,4 +51,36 @@ def get_plots(relative_errs, q_dict, corr_id):
             title=f'Distribution of relative errors for {corr_id} (by sub-region), {key} range')
     
     return plot_dict
+
+
+def get_plots_by_region(relative_errs):
+    for corr_id in ['ti_cpi', 'ti_cpi_om', 'bci_bci', 'wbgi_cce']:
+        fig = px.box(relative_errs[relative_errs.corr_id == corr_id], 
+                        y="rel_err", 
+                        x="region", 
+                        title=f'Relative error distribution by region for {corr_id}', 
+                        hover_data=['corr_id', 'year', 'cname'])
+        fig.update_layout(
+            width=700,
+            height=400,
+            margin={'t': 35, 'b': 35}
+        )
+
+        fig.show()
+        
+def get_plots_by_subregion(relative_errs):
+    for corr_id in ['ti_cpi', 'ti_cpi_om', 'bci_bci', 'wbgi_cce']:
+        fig = px.box(relative_errs[relative_errs.corr_id == corr_id], 
+                        x="rel_err", 
+                        y="sub-region", 
+                        color='region',
+                        title=f'Relative error distribution by sub-region for {corr_id}', 
+                        hover_data=['corr_id', 'year', 'cname'])
+        fig.update_layout(
+            width=1000,
+            height=500,
+            margin={'t': 35, 'b': 35}
+        )
+
+        fig.show()
 
