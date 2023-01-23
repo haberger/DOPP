@@ -13,8 +13,9 @@ To answer the following question on the topic of corruption a model trained on t
 
 ![](img/feature.png)
 
-In the plot above the most important country characteristics for corruption prediction are shown in decreasing order of importance.
+In the plot above the most important country characteristics for corruption prediction are shown in decreasing order of importance. 
 The most important features can be categorized in the following way:
 - __political freedom__: "fh_pr_1.0", "fh_ipolity2", "br_mon", "cpds_vper_0.0", "wel_sys_1.0", "fh_status_1.0", 
 - __Life expectency__: "ihme_lifexp_0104t", ihme_lifexp_0104m
 - __civil liberties__: "gd_ptss_1.0", "fh_cl_1.0 "
+This makes sense because it aligns with the general consensus that free, democratic countries suffer less from the evil that is corruption.
