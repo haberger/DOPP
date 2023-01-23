@@ -19,3 +19,21 @@ The most important features can be categorized in the following way:
 - __Life expectency__: "ihme_lifexp_0104t", ihme_lifexp_0104m
 - __civil liberties__: "gd_ptss_1.0", "fh_cl_1.0 "
 This makes sense because it aligns with the general consensus that free, democratic countries suffer less from the evil that is corruption.
+
+### Difference between countries across models
+
+The models performed equally good for different countries across the regions. Across the sub-regions there was a difference in model performandce, but only small number of interesting connections held across different models:
+- Bigger spread, right shift and higher values in the box plots belows signify worse performance
+- All models performed worse for Eastern Europe region, which might suggest that the corruption index was estimated incorrectly for those countries.
+- All models had the worst performance for countries from Sub-Sahara Africa region, but the countries were different in different models, which implies that there is no mismatch between predictor variables and corruption index.
+- Multiple models (ti_cpi_om, wbgi_cce) had a problem with Latvia from the beginning of 2000s, which might imply that the corruption indices were not estimated correctly.
+
+
+<center>
+    <p>
+    <img src="img/rel_err_dist_sub_region_ti_cpi" width="400" />
+    <img src="img/rel_err_dist_sub_region_ti_cpi_om" width="400" /> 
+    <img src="img/rel_err_dist_sub_region_bci_bci" width="400" />
+    <img src="img/rel_err_dist_sub_region_wbgi_cce" width="400" /> 
+    </p>
+</center>
