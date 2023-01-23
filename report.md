@@ -18,3 +18,12 @@ The most important features can be categorized in the following way:
 - __political freedom__: "fh_pr_1.0", "fh_ipolity2", "br_mon", "cpds_vper_0.0", "wel_sys_1.0", "fh_status_1.0", 
 - __Life expectency__: "ihme_lifexp_0104t", ihme_lifexp_0104m
 - __civil liberties__: "gd_ptss_1.0", "fh_cl_1.0 "
+
+
+### Difference between countries across models
+
+The models performed equally good for different countries across the regions. Across the sub-regions there was a difference in performandce across the sub-regions, but only small number of interesting connections held across different models:
+- All models performed worse for Eastern Europe region, which might suggest that the corruption index was estimated incorrectly for those countries.
+- All models had the worst performance for countries from Sub-Sahara Africa region, but the countries were different in different models, which implies that there is no mismatch between predictor variables and corruption index.
+- Multiple models (ti_cpi_om, wbgi_cce) had a problem with Latvia from the beginning of 2000s, which might imply that the corruption indices were not estimated correctly.
+
